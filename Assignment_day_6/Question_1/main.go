@@ -2,7 +2,34 @@ package main
 
 import "fmt"
 
-func printValue(s string, alice chan string, bob chan string, flag chan int) {
+func printValue(s string, alice chan string, bob chan string) {
+
+	for {
+		select {
+		case val := <-alice:
+			fmt.Printf("alice:%s,", val)
+
+		case val := <-bob:
+			fmt.Printf("bob:%s,", val)
+
+		// case <-flag:
+		// 	return
+		default:
+			break
+		}
+
+	}
+
+}
+
+func main() {
+	s := "helloBob$helloalice#howareyou?#Iamgood.howareyou?$^"
+
+	alice := make(chan string)
+	bob := make(chan string)
+	// flag := make(chan int)
+
+	go printValue(s, alice, bob)
 
 	str := ""
 
@@ -18,37 +45,10 @@ func printValue(s string, alice chan string, bob chan string, flag chan int) {
 			str = ""
 
 		} else if ch == "^" {
-			flag <- 1
+			// flag <- 1
 			break
 		} else {
 			str += ch
-		}
-
-	}
-
-}
-
-func main() {
-	s := "helloBob$helloalice#howareyou?#Iamgood.howareyou?$^"
-
-	alice := make(chan string)
-	bob := make(chan string)
-	flag := make(chan int)
-
-	go printValue(s, alice, bob, flag)
-
-	for {
-		select {
-		case val := <-alice:
-			fmt.Printf("alice:%s,", val)
-
-		case val := <-bob:
-			fmt.Printf("bob:%s,", val)
-
-		case <-flag:
-			return
-		default:
-			break
 		}
 
 	}
