@@ -39,7 +39,6 @@ func main() {
 		fmt.Println("Enter Correct Input Format")
 		return
 	}
-
 	accessSlice(index, nums)
 	fmt.Println("Testing panic and recover")
 }
