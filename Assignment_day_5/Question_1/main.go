@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+func getErrMsg() {
+
+}
+
 func accessSlice(index int, nums []int) {
 
 	defer func() {
@@ -22,6 +26,7 @@ func accessSlice(index int, nums []int) {
 	} else if index >= len(nums) {
 		panic("Index Out Of Range")
 	} else {
+
 		fmt.Printf("Index : %d , value : %d ", index, nums[index])
 	}
 }
@@ -39,7 +44,6 @@ func main() {
 		fmt.Println("Enter Correct Input Format")
 		return
 	}
-
 	accessSlice(index, nums)
-	fmt.Println("Testing panic and recover")
+	fmt.Println("Testing panicking nad recovery")
 }
