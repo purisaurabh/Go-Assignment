@@ -1,25 +1,35 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"runtime"
+	"strings"
+	"sync"
 )
 
-func reverseString(str string, revStr chan string) {
+func reverseString(str string, revStr chan string, wg *sync.WaitGroup) {
 
+	wg.Add(1)
 	val := <-revStr
 
 	fmt.Println("The given string is : ", str)
 	fmt.Println("The Reverse string is : ", val)
 	fmt.Println("The number of goroutine are : ", runtime.NumGoroutine())
+	wg.Done()
 }
 
 func main() {
-	str := "JAMES"
 
-	revStr := make(chan string, 0)
+	var wg sync.WaitGroup
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter a string : ")
+	input, _ := reader.ReadString('\n')
+	str := strings.TrimSpace(input)
 
-	go reverseString(str, revStr)
+	revStr := make(chan string)
+	go reverseString(str, revStr, &wg)
 
 	dumpStr := ""
 
@@ -27,7 +37,6 @@ func main() {
 		ch := fmt.Sprintf("%c", str[i])
 		dumpStr = ch + dumpStr
 	}
-
 	revStr <- dumpStr
-
+	wg.Wait()
 }
