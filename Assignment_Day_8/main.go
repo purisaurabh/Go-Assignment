@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+
 	// "sync"
 	"time"
 
@@ -18,7 +18,6 @@ type WebList struct {
 }
 
 func checkStatus(web string) {
-	// defer wg.Done()
 	resp, err := http.Get(web)
 	if err != nil {
 		fmt.Println("")
@@ -36,10 +35,8 @@ func checkStatus(web string) {
 func checkWebRespond(webs []string) {
 	for i := 0; i < len(webs); i++ {
 		go checkStatus(webs[i])
-
-		// checkStatus(webs[i])
 	}
-	// time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 }
 
 func handlePostWebStatus(w http.ResponseWriter, r *http.Request) {
@@ -53,22 +50,21 @@ func handlePostWebStatus(w http.ResponseWriter, r *http.Request) {
 
 	webList := web.Websites
 	go checkWebRespond(webList)
-	// checkWebRespond(webList)
-
+	time.Sleep(2 * time.Second)
 }
 
 func handlePrintingWebList(w http.ResponseWriter, r *http.Request) {
-	_, err := json.Marshal(m)
+	res, err := json.Marshal(m)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	// w.Write(res)
-	io.WriteString(w, `{
-			"urls":["https://www.google.com" , "https://www.saurabhpuri.com" , "https://www.facebook.com" , "https://joshsoftware.com"]
-	}`)
+	w.Write(res)
+	// io.WriteString(w, `{
+	// 		"urls":["https://www.google.com" , "https://www.saurabhpuri.com" , "https://www.facebook.com" , "https://joshsoftware.com"]
+	// }`)
 }
 
 func handleParticularWebsite(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +122,6 @@ func main() {
 
 	mux.HandleFunc("/websites", handlePostWebStatus).Methods(http.MethodPost)
 	mux.HandleFunc("/websites", handlePrintingWebList).Methods(http.MethodGet)
-	// mux.HandleFunc("/websites", handlePrintingWebList)
 	mux.HandleFunc("/website", handleParticularWebsite).Methods(http.MethodGet)
 	fmt.Println("Starting Server...")
 	http.ListenAndServe("localhost:9000", mux)

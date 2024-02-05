@@ -21,36 +21,17 @@ func TestMain(t *testing.T) {
 	handler.ServeHTTP(resp, req)
 
 	// check the status of code
-
 	if status := resp.Code; status != http.StatusOK {
 		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	// slc := []string{""}
-
-	// op, _ := json.Marshal(slc)
 	expected := `{
 		"urls":["https://www.google.com" , "https://www.saurabhpuri.com" , "https://www.facebook.com" , "https://joshsoftware.com"]
 	  }`
 
-	// wantValue := `{
-	// 	"urls":["https://www.google.com" , "https://www.saurabhpuri.com" , "https://www.facebook.com" , "https://joshsoftware.com"]
-	//   }`
-
-	// fmt.Printf("resp--------------> %#v\n", resp.Body.String())
-	// fmt.Printf("The type : %T", resp.Body.String())
-
 	if reflect.DeepEqual(resp.Body.String(), expected) {
 		t.Errorf("Handler return the unexpectes response , got : %v and want %v ", resp.Body.String(), expected)
-
 	}
-
-	// respCode := resp.Code
-	// givenCode := http.StatusOK
-
-	// if respCode != givenCode {
-	// 	t.Errorf("Handler return the unexpectes response , got : %v and want %v ", respCode, givenCode)
-	// }
 
 }
 
@@ -69,14 +50,34 @@ func TestPostMethod(t *testing.T) {
 	handler := http.HandlerFunc(handlePostWebStatus)
 	handler.ServeHTTP(resp, req)
 
-	// expectedOutpput := `{"urls":["https://www.google.com" , "https://www.saurabhpuri.com" , "https://www.facebook.com" , "https://joshsoftware.com"] }`
-
-	// fmt.Println("The value :", resp.Body.String())
-	// if resp.Body.String() != expectedOutpput {
-	// 	t.Errorf("Unexpected outpput got : %v and want : %v\n", resp.Body.String(), expectedOutpput)
-	// }
-
 	if resp.Code != http.StatusOK {
 		t.Errorf("Unexptected Output")
+	}
+}
+
+func TestParticularWebsite(t *testing.T) {
+	//For Valid Case
+	req, err := http.NewRequest("GET", "/website?name=https://www.youtube.com", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp := httptest.NewRecorder()
+	handler := http.HandlerFunc(handleParticularWebsite)
+
+	handler.ServeHTTP(resp, req)
+
+	// cheking from status code
+	if resp.Code != http.StatusOK {
+		t.Errorf("Unexpected error got %v , want %v", resp.Code, http.StatusOK)
+	}
+
+	expectedBody := "UP"
+
+	// if body := resp.Body.String(); body != expectedBody {
+	// 	t.Errorf("Expected body '%s', but got '%s'", expectedBody, body)
+	// }
+	if reflect.DeepEqual(resp.Body.String(), expectedBody) {
+		t.Errorf("Handler return the unexpectes response , got : %v and want %v ", resp.Body.String(), expectedBody)
 	}
 }
