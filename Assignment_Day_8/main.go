@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	// "sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -17,8 +18,10 @@ type WebList struct {
 }
 
 func checkStatus(web string) {
+	// defer wg.Done()
 	resp, err := http.Get(web)
 	if err != nil {
+		fmt.Println("")
 		m[web] = "DOWN"
 		return
 	}
@@ -31,13 +34,12 @@ func checkStatus(web string) {
 }
 
 func checkWebRespond(webs []string) {
-
 	for i := 0; i < len(webs); i++ {
-		// go checkStatus(webs[i])
-		checkStatus(webs[i])
-	}
+		go checkStatus(webs[i])
 
-	time.Sleep(1 * time.Second)
+		// checkStatus(webs[i])
+	}
+	// time.Sleep(1 * time.Second)
 }
 
 func handlePostWebStatus(w http.ResponseWriter, r *http.Request) {
@@ -50,8 +52,8 @@ func handlePostWebStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webList := web.Websites
-	// go checkWebRespond(webList)
-	checkWebRespond(webList)
+	go checkWebRespond(webList)
+	// checkWebRespond(webList)
 
 }
 
@@ -77,7 +79,7 @@ func handleParticularWebsite(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()
 		mapValue := r.Form
-		// value, _ := json.Marshal(mapValue)
+		// value,There are different kinds of testing t _ := json.Marshal(mapValue)
 
 		// w.Write(value)
 
@@ -130,8 +132,10 @@ func main() {
 	http.ListenAndServe("localhost:9000", mux)
 
 	go func() {
+		// var wg sync.WaitGroup
 		for {
 			for key := range m {
+				// wg.Add()
 				checkStatus(key)
 			}
 			time.Sleep(1 * time.Minute)
